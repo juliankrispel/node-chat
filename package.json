@@ -5,6 +5,11 @@
         "socket.io-client": "*",
         "express": "*",
         "mongodb": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "bower": "*"
+    },
+    "scripts": {
+        "postinstall": "cd public && bower install",
+        "start": "node server.js"
     }
 }
