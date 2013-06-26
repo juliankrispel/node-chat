@@ -5,7 +5,8 @@ var express = require('express'),
     Mongo = require('./lib/mongo.js'),
     Socket = require('./lib/socket.js');
 
-server.listen(8001);
+server.listen(3000);
+console.log('server listening on port 3000, http://localhost:3000');
 
 // Initialize DB
 var db = new Mongo(
