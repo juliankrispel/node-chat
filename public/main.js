@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8001');
+var socket = io.connect('http://localhost:3000');
 
 var elButton = document.getElementById('submit_chat_message');
 var elInput = document.getElementById('chat_message');
