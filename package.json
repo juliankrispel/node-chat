@@ -1,0 +1,10 @@
+{
+    "name": "node-chat",
+    "dependencies": {
+        "socket.io": "*",
+        "socket.io-client": "*",
+        "express": "*",
+        "mongodb": "*",
+        "underscore": "*"
+    }
+}
