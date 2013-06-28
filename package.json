@@ -1,6 +1,7 @@
 {
     "name": "node-chat",
     "dependencies": {
+        "backbone": "*",
         "socket.io": "*",
         "socket.io-client": "*",
         "express": "*",
