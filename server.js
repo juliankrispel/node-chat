@@ -1,6 +1,7 @@
 var express = require('express'),
     app = express(),
     clientApp = express(),
+    hbs = require('hbs'),
     server = require('http').createServer(app),
     clientServer = require('http').createServer(clientApp),
     fs = require('fs'),
@@ -8,7 +9,6 @@ var express = require('express'),
     Backbone = require('backbone'),
     Mongo = require('./lib/mongo.js'),
     Users = require('./lib/users.js'),
-    users = new Users;
     Socket = require('./lib/socket.js');
 
 server.listen(3000);
@@ -25,10 +25,12 @@ var db = new Mongo(
     }
 );
 
+var users = new Users([], {db: db, dbCollectionName: 'users'});
+
 db.on('connected', function(){
-    db.get('users', 'messages', function(err, results){
+    db.get('users', '', function(err, results){
         if(err) throw(err);
-        console.log(results);
+        else users.add(results);
     });
 });
 
@@ -37,54 +39,63 @@ var socket = new Socket(server);
 
 // Middleware between socket.io and Mongo
 socket.on('message_from_user', function(socketId, data){
-    db.insert(data);
+    var user = users.findWhere({socketId: socketId});
+    console.log('Message inserted into db ', data);
+    if(!data.message) return console.warn('Message not sent or empty');
+    if(!user) return console.warn('User doesn\'t exist');
+    data.user = user.get('email');
+    db.insert('messages', data);
 });
 
-db.on('insert', function(){ 
-    console.log('insert'); 
-});
+app.set('view engine', 'hbs');
+app.engine('html', require('hbs').__express);
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
-  res.sendfile(__dirname + 'admin/index.html');
+    res.render('admin/index.html', { users: users.toJSON() });
+});
+
+app.get('/user/:email', function(req, res){
+    var user = users.findWhere({email: req.params.email});
+
+    db.get('messages',
+        {user: req.params.email},
+        function(err, results){
+            console.log('results', results);
+            res.render('admin/user.html', {messages: results});
+    });
+
 });
 
 clientApp.use(express.static(__dirname + '/public'));
 clientApp.get('/', function (req, res) {
-  res.sendfile(__dirname + 'client/index.html');
+    res.sendfile(__dirname + '/public/client/index.html');
 });
 
+socket.on('socket_disconnect', function(socketId){
+    var user = users.findWhere({socketId: socketId});
+    if(user) user.set({socketId: null});
+});
 
 // When a new socket connects
 socket.on('user_connected', function(socketId, user){
     // Catch invalid user info
-    //
     if(!user || !user.clientid || !user.email){
         socket.closeSocket(socketId);
         return ;
     }
 
-    //See if user is in the databsase
-    db.get('users', {
-        $or: [
-            {'username': user.username },
-            {'email': user.email }
-        ]
-    }, function(err, results){
-        if(err) throw (err);
-        // If the user isn't in the database yet, create him
-        if(_(results).isEmpty()){
-            db.insert('users', user, function(){
-                users.add(user);
-                console.log('user created: ' +  user.username);
-            });
-        }else{
-            console.log('User found in DB');
-            console.log(results);
-            users.add(user);
-            console.log(users);
-        }
-    });
+    // Attach socketId to user
+    user.socketId = socketId;
+
+    if(!users.get(user.email)){
+        console.log('users.create');
+        users.create(results)
+    }
+    else{
+        console.log('users.add');
+        users.add(user, {merge: true});
+    }
 });
 
 // Conversations is a collection of Conversation Documents

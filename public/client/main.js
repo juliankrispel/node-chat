@@ -63,13 +63,13 @@ socket.on('message_from_server', function(data){
 });
 
 socket.on('connect', function (data) {
-    var user = 'Julian';
-    var email = 'juliankrispel@yahoo.de';
+    var user = 'Charles';
+    var email = 'julian@outeredgeuk.com';
     var time = new Date().getTime();
 
     socket.emit('user_connected', {
         username: user,
-        clientid: 123123,
+        clientid: 413214213,
         email: email, 
         time: time
     });
