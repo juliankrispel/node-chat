@@ -12,9 +12,8 @@ var express = require('express'),
     Socket = require('./lib/socket.js');
 
 server.listen(3000);
-clientServer.listen(4000);
-console.log('server listening on port 3000, http://localhost:3000');
-console.log('client server listening on port 3000, http://localhost:3000');
+clientServer.listen(3001);
+console.log('3000, 3001');
 
 // Initialize DB
 var db = new Mongo(
@@ -52,20 +51,26 @@ app.engine('html', require('hbs').__express);
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
-    res.render('admin/index.html', { users: users.toJSON() });
+    res.render('admin/index.html');
 });
 
 app.get('/user/:email', function(req, res){
-    var user = users.findWhere({email: req.params.email});
+    var user = users.findWhere({email: req.params.email}).toJSON();
+    req.accepts('application/json');
 
     db.get('messages',
         {user: req.params.email},
         function(err, results){
-            console.log('results', results);
-            res.render('admin/user.html', {messages: results});
+            res.send({json: results});
     });
-
 });
+
+app.get('/user', function(req, res){
+    var user = users.toJSON();
+    req.accepts('application/json');
+    res.send({json: results});
+});
+
 
 clientApp.use(express.static(__dirname + '/public'));
 clientApp.get('/', function (req, res) {

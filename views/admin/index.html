@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="app">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Admin Area</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js" type="text/javascript"></script>
+    <script src="components/socket.io-client/dist/socket.io.min.js"></script>
+    <script src="components/angular/angular.min.js"></script>
+    <script src="admin.js"></script>
 </head>
 <body>
-    <h1>Users</h1>
-    <ul>
-        {{#each users}}
-        <li><a href="/user/{{email}}">{{username}} | {{clientid}} | {{email}} | {{^socketId}}online{{/socketId}}</a></li>
-        {{/each}}
-        {{^each users}}
-        <li>No Users I'm afraid</li>
-        {{/each}}
-    </ul>
+    <div ng-view></div>
+
+    <script type="text/ng-template" id="users.html">
+        <h1>Users</h1>
+    </script>
+
+    <script type="text/ng-template" id="user.html">
+        <h1>User</h1>
+    </script>
 </body>
 </html>
