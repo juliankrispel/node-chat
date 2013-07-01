@@ -90,7 +90,7 @@ socket.on('user_connected', function(socketId, user){
 
     if(!users.get(user.email)){
         console.log('users.create');
-        users.create(results)
+        users.create(user);
     }
     else{
         console.log('users.add');
