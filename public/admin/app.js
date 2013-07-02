@@ -1,5 +1,5 @@
-define(['angular', 'socket', 'routes', 'controllers'], function(angular){
+define(['angular', 'socket', 'controllers'], function(angular, socket, controllers){
     'use strict';
-    var app = angular.module('app', ['app.routes', 'app.socket']);
-    return app;
+
+    return angular.module('app', ['app.socket', 'app.controllers']);
 });

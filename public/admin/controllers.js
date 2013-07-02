@@ -6,10 +6,11 @@ define(['angular', 'socket'], function(angular){
         
         }])
         .controller('UsersController', ['$scope', 'socket', function($scope, socket){
-            socket.emit('user:get');
-            socket.on('user:get', function(data){
+        $scope.user = 'Julian';
+//            socket.emit('user:get');
+//            socket.on('user:get', function(data){
 //                $scope.users = data;
-                $scope.users = [{name: 'Julian', email: 'julian@outeredgeuk.com'}];
-            });
+//                $scope.users = [{name: 'Julian', email: 'julian@outeredgeuk.com'}];
+//            });
         }]);
 });

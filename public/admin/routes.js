@@ -1,9 +1,15 @@
-define(['angular', 'controllers'], function(angular){
+define(['angular', 'app'], function(angular, app){
     'use strict';
-    return angular.module('app.routes', ['app.controllers']).config(['$routeProvider', function($routeProvider){
-        $routeProvider
-        .when('/user/:userId', { controller: 'UserController', templateUrl: 'user.html' })
-        .when('/users', {controller: 'UsersController', templateUrl: 'users.html'})
+
+    return app.config(['$routeProvider', function($routeProvider){
+        $routeProvider.when('/user/:userId', {
+            templateUrl: 'user.html', 
+            controller: 'UserController'
+        })
+        .when('/users', {
+            templateUrl: 'users.html', 
+            controller: 'UsersController'
+        })
         .otherwise({redirectTo: '/users'});
     }]);
 });
