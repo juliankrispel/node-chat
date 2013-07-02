@@ -1,6 +1,6 @@
 require.config({
     paths: {
-        angular: '../components/angular/angular.min',
+        angular: '../components/angular/angular',
         text: '../components/require/text',
         socketio: '../components/socket.io-client/dist/socket.io.min'
     },
@@ -18,7 +18,8 @@ require.config({
 require( [
     'angular',
     'app',
-    ], function(angular, app) {
+    'routes'
+    ], function(angular, app, routes) {
         'use strict';
-        angular.bootstrap(document, ['app']);
+        angular.bootstrap(document, [app['name']]);
     });
