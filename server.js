@@ -1,5 +1,5 @@
-var express = require('express'),
-    app = express(),
+var express = require('express.io'),
+    app = express().http().io(),
     clientApp = express(),
     hbs = require('hbs'),
     server = require('http').createServer(app),
@@ -11,9 +11,9 @@ var express = require('express'),
     Users = require('./lib/users.js'),
     Socket = require('./lib/socket.js');
 
-server.listen(3000);
+app.listen(3000);
 clientServer.listen(3001);
-console.log('3000, 3001');
+console.log('server = 3000, client = 3001');
 
 // Initialize DB
 var db = new Mongo(
@@ -34,14 +34,18 @@ db.on('connected', function(){
 });
 
 // Initialize Socket
-var socket = new Socket(server);
+var socket = new Socket(clientServer);
 
 // Middleware between socket.io and Mongo
 socket.on('message_from_user', function(socketId, data){
+    //See if user is in collection
     var user = users.findWhere({socketId: socketId});
-    console.log('Message inserted into db ', data);
+
+    //Cancel the function if there is either no user or no message
     if(!data.message) return console.warn('Message not sent or empty');
     if(!user) return console.warn('User doesn\'t exist');
+
+    //Get the users email, attach it to the message as an identifier and insert the message
     data.user = user.get('email');
     db.insert('messages', data);
 });
@@ -54,23 +58,23 @@ app.get('/', function (req, res) {
     res.render('admin/index.html');
 });
 
-app.get('/user/:email', function(req, res){
-    var user = users.findWhere({email: req.params.email}).toJSON();
-    req.accepts('application/json');
+app.io.route('user', {
 
-    db.get('messages',
-        {user: req.params.email},
-        function(err, results){
-            res.send({json: results});
-    });
+    get: function(req){
+
+        console.log(req)
+        var data = users.toJSON();
+        req.io.emit('user:get', data);
+
+//        var user = users.findWhere({email: req.params.email}).toJSON();
+//
+//        db.get('messages',
+//            {user: req.params.email},
+//            function(err, results){
+//                req.io.emt('user:get', {json: results});
+//        });
+    },
 });
-
-app.get('/user', function(req, res){
-    var user = users.toJSON();
-    req.accepts('application/json');
-    res.send({json: results});
-});
-
 
 clientApp.use(express.static(__dirname + '/public'));
 clientApp.get('/', function (req, res) {

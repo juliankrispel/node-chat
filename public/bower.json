@@ -2,7 +2,8 @@
     "dependencies": {
         "socket.io-client": "*",
         "underscore": "*",
-        "angular": "*"
+        "angular": "*",
+        "requirejs": "*"
     }
 }
 
