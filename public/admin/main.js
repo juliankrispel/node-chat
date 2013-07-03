@@ -4,7 +4,7 @@ require.config({
         text: '../components/require/text',
         socketio: '../components/socket.io-client/dist/socket.io.min'
     },
-    baseUrl: 'admin/',
+    baseUrl: '/admin/',
     shim: {
         'socketio': {'exports': 'io'},
         'angular' : {'exports' : 'angular'},

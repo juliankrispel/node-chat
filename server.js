@@ -2,7 +2,6 @@ var express = require('express.io'),
     app = express().http().io(),
     clientApp = express(),
     hbs = require('hbs'),
-    server = require('http').createServer(app),
     clientServer = require('http').createServer(clientApp),
     fs = require('fs'),
     _ = require('underscore'),
@@ -50,30 +49,29 @@ socket.on('message_from_user', function(socketId, data){
     db.insert('messages', data);
 });
 
-app.set('view engine', 'hbs');
-app.engine('html', require('hbs').__express);
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
-    res.render('admin/index.html');
+    res.redirect('/admin');
+});
+
+app.io.route('users', {
+    get: function(req){
+        console.log(req)
+        var data = users.toJSON();
+        req.io.emit('users:get', data);
+    },
 });
 
 app.io.route('user', {
-
     get: function(req){
-
-        console.log(req)
-        var data = users.toJSON();
-        req.io.emit('user:get', data);
-
-//        var user = users.findWhere({email: req.params.email}).toJSON();
-//
-//        db.get('messages',
-//            {user: req.params.email},
-//            function(err, results){
-//                req.io.emt('user:get', {json: results});
-//        });
-    },
+        var user = users.findWhere({email: req.data.user}).toJSON();
+        db.get('messages',
+            {user: req.data.user},
+            function(err, results){
+                req.io.emit('usermessages:get', {json: results});
+        });
+    }
 });
 
 clientApp.use(express.static(__dirname + '/public'));

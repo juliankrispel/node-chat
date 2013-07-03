@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Area</title>
+    <script data-main="/admin/main" src="/components/requirejs/require.js"></script>
+</head>
+<body>
+    <div ng-controller="UsersController">{{user}}</div>
+    <div ng-view></div>
+    <script type="text/ng-template" id="users.html">
+        <h1>Users</h1>
+        <ul>
+            <li ng-repeat="user in users"><a href="#/user/{{user.email}}">{{user.name}} | {{user.email}}</a></li>
+        </ul>
+    </script>
+
+    <script type="text/ng-template" id="user.html">
+        <h1>User</h1>
+    </script>
+</body>
+</html>
